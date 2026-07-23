@@ -67,3 +67,28 @@ TEST(Crc32, LongerVectorIncrementalMatches)
     // Stable golden for MAVLink CRC32 of bytes 0..255.
     EXPECT_EQ(oneshot.get(), 0x2493092bu);
 }
+
+TEST(Crc32, IndependentInstancesDoNotShareState)
+{
+    const uint8_t a[] = {'A'};
+    const uint8_t b[] = {'B'};
+    Crc32 c1;
+    Crc32 c2;
+    c1.add(a, 1);
+    EXPECT_EQ(c2.get(), 0u);
+    c2.add(b, 1);
+    EXPECT_NE(c1.get(), c2.get());
+    EXPECT_NE(c1.get(), 0u);
+    EXPECT_NE(c2.get(), 0u);
+}
+
+TEST(Crc32, AddAfterGetContinues)
+{
+    const uint8_t data[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    Crc32 crc;
+    crc.add(data, 4);
+    const uint32_t mid = crc.get();
+    crc.add(data + 4, 5);
+    EXPECT_EQ(crc.get(), 0x2dfd2d88u);
+    EXPECT_NE(mid, crc.get());
+}
