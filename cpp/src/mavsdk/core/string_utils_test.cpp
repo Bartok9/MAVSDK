@@ -40,3 +40,19 @@ TEST(StringUtils, StartsWithLongerPrefixRejected)
     EXPECT_FALSE(starts_with("ab", "abc"));
     EXPECT_EQ(strip_prefix("ab", "abc"), "ab");
 }
+
+TEST(StringUtils, StartsWithIsCaseSensitive)
+{
+    EXPECT_FALSE(starts_with("MAVSDK", "mav"));
+    EXPECT_TRUE(starts_with("MAVSDK", "MAV"));
+    EXPECT_EQ(strip_prefix("MAVSDK", "mav"), "MAVSDK");
+    EXPECT_EQ(strip_prefix("MAVSDK", "MAV"), "SDK");
+}
+
+TEST(StringUtils, StripPrefixRepeatedPrefixOnlyOnce)
+{
+    // strip_prefix removes a single match, not all repeated occurrences.
+    EXPECT_EQ(strip_prefix("aaaX", "a"), "aaX");
+    EXPECT_EQ(strip_prefix("aaaX", "aa"), "aX");
+    EXPECT_EQ(strip_prefix("aaaX", "aaa"), "X");
+}
