@@ -280,3 +280,19 @@ TEST(MathUtils, ConstrainKeepsAsinDomain)
     EXPECT_FALSE(std::isnan(asinf(over)));
     EXPECT_FALSE(std::isnan(asinf(under)));
 }
+
+TEST(MathUtils, ConstrainEqualityBounds)
+{
+    EXPECT_FLOAT_EQ(constrain(5.0f, 5.0f, 10.0f), 5.0f);
+    EXPECT_FLOAT_EQ(constrain(10.0f, 5.0f, 10.0f), 10.0f);
+    EXPECT_DOUBLE_EQ(constrain(-1.0, -1.0, 1.0), -1.0);
+    EXPECT_DOUBLE_EQ(constrain(1.0, -1.0, 1.0), 1.0);
+}
+
+TEST(MathUtils, ToRadDegPiConsistency)
+{
+    EXPECT_NEAR(to_deg_from_rad(float(M_PI_F)), 180.0f, 1e-4f);
+    EXPECT_NEAR(to_rad_from_deg(180.0f), float(M_PI_F), 1e-5f);
+    EXPECT_NEAR(to_deg_from_rad(0.0f), 0.0f, 1e-6f);
+    EXPECT_NEAR(to_rad_from_deg(-90.0f), float(-M_PI_F / 2.0f), 1e-5f);
+}
