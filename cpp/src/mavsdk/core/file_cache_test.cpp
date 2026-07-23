@@ -149,3 +149,23 @@ TEST_F(FileCacheFixture, Multi)
         EXPECT_EQ(cache.access(_tmp_files[10].cache_tag).value(), _tmp_files[10].cached_path);
     }
 }
+
+TEST_F(FileCacheFixture, AccessMissingAndDuplicateInsert)
+{
+    FileCache cache(_cache_dir, 5, true);
+
+    EXPECT_FALSE(cache.access("no_such_tag_xyz"));
+
+    // Insert same tag twice: second insert should return existing path and not fail.
+    auto first = cache.insert(_tmp_files[0].cache_tag, _tmp_files[0].path);
+    ASSERT_TRUE(first);
+    // Source file was moved on first insert — recreate a temp payload for second insert.
+    {
+        std::ofstream f(_tmp_files[0].path, std::ios::out | std::ios::binary);
+        f << "dup";
+    }
+    auto second = cache.insert(_tmp_files[0].cache_tag, _tmp_files[0].path);
+    ASSERT_TRUE(second);
+    EXPECT_EQ(first.value(), second.value());
+    EXPECT_EQ(cache.access(_tmp_files[0].cache_tag).value(), first.value());
+}
