@@ -56,3 +56,65 @@ TEST(Vehicle, VtolAndExoticStream)
     oss << Vehicle::VtolTailsitter << "," << Vehicle::Parachute << "," << Vehicle::Dodecarotor;
     EXPECT_EQ(oss.str(), "VtolTailsitter,Parachute,Dodecarotor");
 }
+
+TEST(Vehicle, ToVehicleFromMavTypeRemainingTypes)
+{
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_COAXIAL), Vehicle::Coaxial);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_AIRSHIP), Vehicle::Airship);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_FREE_BALLOON), Vehicle::FreeBalloon);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_ROCKET), Vehicle::Rocket);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_FLAPPING_WING), Vehicle::FlappingWing);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_KITE), Vehicle::Kite);
+    EXPECT_EQ(
+        to_vehicle_from_mav_type(MAV_TYPE_VTOL_TAILSITTER_DUOROTOR),
+        Vehicle::VtolTailsitterDuorotor);
+    EXPECT_EQ(
+        to_vehicle_from_mav_type(MAV_TYPE_VTOL_TAILSITTER_QUADROTOR),
+        Vehicle::VtolTailsitterQuadrotor);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_VTOL_FIXEDROTOR), Vehicle::VtolFixedrotor);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_VTOL_TAILSITTER), Vehicle::VtolTailsitter);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_VTOL_TILTWING), Vehicle::VtolTiltwing);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_PARAFOIL), Vehicle::Parafoil);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_DODECAROTOR), Vehicle::Dodecarotor);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_DECAROTOR), Vehicle::Decarotor);
+    EXPECT_EQ(to_vehicle_from_mav_type(MAV_TYPE_PARACHUTE), Vehicle::Parachute);
+}
+
+TEST(Vehicle, StreamOperatorAllKnownLabels)
+{
+    const std::pair<Vehicle, const char*> cases[] = {
+        {Vehicle::Unknown, "Unknown"},
+        {Vehicle::Generic, "Generic"},
+        {Vehicle::FixedWing, "FixedWing"},
+        {Vehicle::Quadrotor, "Quadrotor"},
+        {Vehicle::Coaxial, "Coaxial"},
+        {Vehicle::Helicopter, "Helicopter"},
+        {Vehicle::Airship, "Airship"},
+        {Vehicle::FreeBalloon, "FreeBalloon"},
+        {Vehicle::Rocket, "Rocket"},
+        {Vehicle::GroundRover, "GroundRover"},
+        {Vehicle::SurfaceBoat, "SurfaceBoat"},
+        {Vehicle::Submarine, "Submarine"},
+        {Vehicle::Hexarotor, "Hexarotor"},
+        {Vehicle::Octorotor, "Octorotor"},
+        {Vehicle::Tricopter, "Tricopter"},
+        {Vehicle::FlappingWing, "FlappingWing"},
+        {Vehicle::Kite, "Kite"},
+        {Vehicle::VtolTailsitterDuorotor, "VtolTailsitterDuorotor"},
+        {Vehicle::VtolTailsitterQuadrotor, "VtolTailsitterQuadrotor"},
+        {Vehicle::VtolTiltrotor, "VtolTiltrotor"},
+        {Vehicle::VtolFixedrotor, "VtolFixedrotor"},
+        {Vehicle::VtolTailsitter, "VtolTailsitter"},
+        {Vehicle::VtolTiltwing, "VtolTiltwing"},
+        {Vehicle::Parafoil, "Parafoil"},
+        {Vehicle::Dodecarotor, "Dodecarotor"},
+        {Vehicle::Decarotor, "Decarotor"},
+        {Vehicle::Parachute, "Parachute"},
+        {Vehicle::GenericMultirotor, "GenericMultirotor"},
+    };
+    for (const auto& c : cases) {
+        std::ostringstream oss;
+        oss << c.first;
+        EXPECT_EQ(oss.str(), c.second) << "vehicle label mismatch";
+    }
+}
