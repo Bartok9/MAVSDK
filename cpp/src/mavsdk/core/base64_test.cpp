@@ -71,3 +71,18 @@ TEST(Base64, InvalidAlphabetDoesNotCrash)
     auto junk = base64_decode("@@@@");
     EXPECT_TRUE(junk.empty());
 }
+
+TEST(Base64, PadOnlyInputYieldsEmpty)
+{
+    // Decoder treats '=' as end-of-payload; pad-only must not invent bytes.
+    EXPECT_TRUE(base64_decode("=").empty());
+    EXPECT_TRUE(base64_decode("==").empty());
+    EXPECT_TRUE(base64_decode("===").empty());
+}
+
+TEST(Base64, WhitespaceNotAlphabetStops)
+{
+    // Space is not base64; decoder stops without consuming further bytes.
+    auto out = base64_decode("TWFu TWFu");
+    EXPECT_EQ(out, (std::vector<uint8_t>{0x4d, 0x61, 0x6e}));
+}
