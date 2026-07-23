@@ -118,3 +118,31 @@ TEST(Ringbuffer, OperatorIndexAfterWrap)
     EXPECT_EQ(buffer[1], 3);
     EXPECT_EQ(buffer[2], 4);
 }
+
+TEST(Ringbuffer, IteratorDistanceAndPostIncrement)
+{
+    auto buffer = Ringbuffer<int, 4>{};
+    buffer.push(10);
+    buffer.push(20);
+    buffer.push(30);
+    auto it = buffer.begin();
+    auto it2 = it++;
+    EXPECT_EQ(*it2, 10);
+    EXPECT_EQ(*it, 20);
+    EXPECT_EQ(buffer.end() - buffer.begin(), 3);
+    EXPECT_EQ(it - buffer.begin(), 1);
+}
+
+TEST(Ringbuffer, ConstBeginMatches)
+{
+    auto buffer = Ringbuffer<int, 3>{};
+    buffer.push(1);
+    buffer.push(2);
+    const auto& cbuf = buffer;
+    auto it = cbuf.cbegin();
+    EXPECT_EQ(*it, 1);
+    ++it;
+    EXPECT_EQ(*it, 2);
+    ++it;
+    EXPECT_TRUE(it == cbuf.cend());
+}
