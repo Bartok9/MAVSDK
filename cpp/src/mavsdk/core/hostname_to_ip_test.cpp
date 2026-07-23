@@ -52,3 +52,21 @@ TEST(HostnameToIp, WhitespaceRejected)
     EXPECT_FALSE(resolve_hostname_to_ip(" "));
     EXPECT_FALSE(resolve_hostname_to_ip("127.0.0.1 "));
 }
+
+TEST(HostnameToIp, BroadcastAndLoopbackVariants)
+{
+    auto b = resolve_hostname_to_ip("255.255.255.255");
+    ASSERT_TRUE(b);
+    EXPECT_EQ(b.value(), "255.255.255.255");
+
+    auto loop = resolve_hostname_to_ip("127.0.0.1");
+    ASSERT_TRUE(loop);
+    EXPECT_EQ(loop.value(), "127.0.0.1");
+}
+
+TEST(HostnameToIp, IncompleteDottedRejected)
+{
+    // Incomplete IPv4-looking strings must not resolve as hostnames spontaneously.
+    EXPECT_FALSE(resolve_hostname_to_ip("192.168.1"));
+    EXPECT_FALSE(resolve_hostname_to_ip("1.2"));
+}
