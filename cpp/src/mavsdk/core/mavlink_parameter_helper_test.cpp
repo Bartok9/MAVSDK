@@ -50,3 +50,19 @@ TEST(MavlinkParameterHelper, RoundTripShortId)
     auto arr = param_id_to_message_buffer("SYS_AUTOSTART");
     EXPECT_EQ(extract_safe_param_id(arr.data()), "SYS_AUTOSTART");
 }
+
+TEST(MavlinkParameterHelper, EmptyParamIdRoundTrip)
+{
+    auto arr = param_id_to_message_buffer("");
+    for (size_t i = 0; i < PARAM_ID_LEN; ++i) {
+        EXPECT_EQ(arr[i], '\0');
+    }
+    EXPECT_EQ(extract_safe_param_id(arr.data()), "");
+}
+
+TEST(MavlinkParameterHelper, ExactSixteenRoundTrip)
+{
+    const std::string id(PARAM_ID_LEN, 'B');
+    auto arr = param_id_to_message_buffer(id);
+    EXPECT_EQ(extract_safe_param_id(arr.data()), id);
+}
