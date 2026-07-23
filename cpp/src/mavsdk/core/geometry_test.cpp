@@ -141,3 +141,23 @@ TEST(Geometry, PureSouthOffset)
     EXPECT_NEAR(global.latitude_deg, -1.0, 1e-6);
     EXPECT_NEAR(global.longitude_deg, 0.0, 1e-9);
 }
+
+TEST(Geometry, LargeEastOffsetRoundtrip)
+{
+    // Multi-kilometer east offset at mid latitude — keeps conversion stable.
+    CoordinateTransformation ct({47.0, 8.0});
+    CoordinateTransformation::LocalCoordinate far{0.0, 50000.0};
+    auto again = ct.local_from_global(ct.global_from_local(far));
+    EXPECT_NEAR(far.north_m, again.north_m, 1e-3);
+    EXPECT_NEAR(far.east_m, again.east_m, 1e-3);
+}
+
+TEST(Geometry, ReferenceNearDateLine)
+{
+    // Reference near ±180 — local roundtrip of a small NE step must hold.
+    CoordinateTransformation ct({0.0, 179.5});
+    CoordinateTransformation::LocalCoordinate step{100.0, 200.0};
+    auto again = ct.local_from_global(ct.global_from_local(step));
+    EXPECT_NEAR(step.north_m, again.north_m, 1e-4);
+    EXPECT_NEAR(step.east_m, again.east_m, 1e-4);
+}
